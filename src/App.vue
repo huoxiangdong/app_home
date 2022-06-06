@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onBeforeMount, onMounted } from "vue";
 import { useStorage, useFetch } from "@vueuse/core";
 
 import { notification } from "ant-design-vue";
@@ -8,7 +8,8 @@ const store = useStorage("app-store", { server: "" });
 const searchValue = ref("");
 const loading = ref(false);
 
-if (store.value.server !== "") {
+//console.log(location.hash)
+if (store.value.server !== "" && location.hash !== "#reset") {
   location.href = store.value.server;
 }
 
@@ -51,8 +52,16 @@ const onSearch = async (value: string) => {
     openNotificationWithIcon("error");
   }
 };
-
-onMounted(() => {});
+onBeforeMount(() => {
+  if (store.value.server !== "" && location.hash !== "#reset") {
+    location.href = store.value.server;
+  }
+});
+onMounted(() => {
+  if (store.value.server !== "" && location.hash !== "#reset") {
+    location.href = store.value.server;
+  }
+});
 </script>
 
 <template>
