@@ -8,8 +8,12 @@ const store = useStorage("app-store", { server: "" });
 const searchValue = ref("");
 const loading = ref(false);
 
-//console.log(location.hash)
-if (store.value.server !== "" && location.hash !== "#reset") {
+// reset
+if(location.hash === "#reset") {
+  store.value.server = ""
+}
+
+if (store.value.server !== "") {
   location.href = store.value.server;
 }
 
@@ -31,26 +35,38 @@ const onSearch = async (value: string) => {
     openNotificationWithIcon("warning");
     return;
   }
-  loading.value = true;
-  const url = "http://" + value.replace("http://", "");
 
-  const rst = await useFetch(url, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    mode: "no-cors",
-  });
+  // local
+  if(value === 'ssc_wms') {
+    // @ts-ignore
+    wdsdk.loadUrl('file:///android_asset/ssc_wms/index.html')
+  }
+
+  loading.value = true;
+  let url = "http://" + value.replace("http://", "");
+
+  if(value === 'ssc') {
+    // @ts-ignore
+    url = 'http://10.1.14.254:8088'
+  }
+
+  // const rst = await useFetch(url, {
+  //   method: "GET",
+  //   headers: {
+  //     "Content-Type": "application/x-www-form-urlencoded",
+  //   },
+  //   mode: "no-cors",
+  // });
 
   loading.value = false;
-  const state = rst.statusCode.value;
+  //const state = rst.statusCode.value;
 
-  if (state !== null) {
+  //if (state !== null) {
     store.value.server = url;
     location.href = url;
-  } else {
-    openNotificationWithIcon("error");
-  }
+  //} else {
+    //openNotificationWithIcon("error");
+  //}
 };
 onBeforeMount(() => {
   if (store.value.server !== "" && location.hash !== "#reset") {
