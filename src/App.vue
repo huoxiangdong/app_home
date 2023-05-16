@@ -5,7 +5,7 @@ import { useNetwork, useStorage, useFetch } from "@vueuse/core";
 import { notification } from "ant-design-vue";
 
 const store = useStorage("app-store", { server: "" });
-const searchValue = ref("SSC");
+const searchValue = ref("ssc");
 const loading = ref(false);
 
 const { isOnline, offlineAt, downlink, downlinkMax, effectiveType, saveData } = useNetwork()
@@ -23,7 +23,6 @@ const speed = computed(() => {
 const message = computed(() => {
   return isOnline.value ? '网络状态: 在线' : '网络状态: 离线'
 })
-
 
 // reset
 if (location.hash === "#reset") {
@@ -62,9 +61,14 @@ const onSearch = async (value: string) => {
   loading.value = true;
   let url = "http://" + value.replace("http://", "");
 
-  if (value === 'SSC') {
+  if (value === 'ssc') {
     // @ts-ignore
     url = 'http://10.1.14.254:8088'
+  }
+
+  if (value === 'dev') {
+    // @ts-ignore
+    url = 'http://192.168.31.87:4173'
   }
 
   // const rst = await useFetch(url, {
@@ -101,7 +105,8 @@ onMounted(() => {
 <template>
   <a-row h-screen flex justify-center items-center>
     <a-col :span="24" px-10>
-      <a-input-search v-model:value="searchValue" :allowClear="true" placeholder="请输入服务器地址" enter-button="检索" size="large"
+      <a-input-search v-model:value="searchValue" :allowClear="true"
+      placeholder="请输入服务器地址" enter-button="检索" size="large"
         :loading="loading" @search="onSearch" />
         <div h-10></div>
       <div flex justify-center items-center>
