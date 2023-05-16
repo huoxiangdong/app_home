@@ -1,15 +1,31 @@
 <script setup lang="ts">
-import { ref, onBeforeMount, onMounted } from "vue";
-import { useStorage, useFetch } from "@vueuse/core";
+import { ref, onBeforeMount, onMounted, computed } from "vue";
+import { useNetwork, useStorage, useFetch } from "@vueuse/core";
 
 import { notification } from "ant-design-vue";
 
 const store = useStorage("app-store", { server: "" });
-const searchValue = ref("");
+const searchValue = ref("SSC");
 const loading = ref(false);
 
+const { isOnline, offlineAt, downlink, downlinkMax, effectiveType, saveData } = useNetwork()
+
+const type = computed(() => {
+  return isOnline.value ? 'success' : 'error'
+})
+
+const speed = computed(() => {
+  return '网速: ' + downlink.value * 1024 / 8 + "KB/s"
+})
+
+
+const message = computed(() => {
+  return isOnline.value ? '网络状态: 在线' : '网络状态: 离线'
+})
+
+
 // reset
-if(location.hash === "#reset") {
+if (location.hash === "#reset") {
   store.value.server = ""
 }
 
@@ -37,7 +53,7 @@ const onSearch = async (value: string) => {
   }
 
   // local
-  if(value === 'ssc_wms') {
+  if (value === 'ssc_wms') {
     // @ts-ignore
     wdsdk.loadUrl('file:///android_asset/ssc_wms/index.html')
   }
@@ -45,7 +61,7 @@ const onSearch = async (value: string) => {
   loading.value = true;
   let url = "http://" + value.replace("http://", "");
 
-  if(value === 'ssc') {
+  if (value === 'SSC') {
     // @ts-ignore
     url = 'http://10.1.14.254:8088'
   }
@@ -62,10 +78,10 @@ const onSearch = async (value: string) => {
   //const state = rst.statusCode.value;
 
   //if (state !== null) {
-    store.value.server = url;
-    location.href = url;
+  store.value.server = url;
+  location.href = url;
   //} else {
-    //openNotificationWithIcon("error");
+  //openNotificationWithIcon("error");
   //}
 };
 onBeforeMount(() => {
@@ -77,20 +93,27 @@ onMounted(() => {
   if (store.value.server !== "" && location.hash !== "#reset") {
     location.href = store.value.server;
   }
+
 });
 </script>
 
 <template>
-  <div h-screen flex justify-center items-center px-10>
-    <a-input-search
-      v-model:value="searchValue"
-      placeholder="请输入服务器地址"
-      enter-button="检索"
-      size="large"
-      :loading="loading"
-      @search="onSearch"
-    />
-  </div>
+  <a-row h-screen flex justify-center items-center>
+    <a-col :span="24" px-10>
+      <a-input-search v-model:value="searchValue" :allowClear="true" placeholder="请输入服务器地址" enter-button="检索" size="large"
+        :loading="loading" @search="onSearch" />
+        <div h-10></div>
+      <div flex justify-center items-center>
+        <a-space>
+          <a-alert  w-60 :message="message" :type="type" />
+        <a-alert   w-60 :message="speed" :type="type" />
+        </a-space>
+
+      </div>
+
+    </a-col>
+
+  </a-row>
 </template>
 
 <style>
