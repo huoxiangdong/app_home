@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onBeforeMount, onMounted, computed } from "vue";
+import { ref, unref, onBeforeMount, onMounted, computed } from "vue";
 import { useNetwork, useStorage, useFetch } from "@vueuse/core";
 
 import { notification } from "ant-design-vue";
@@ -15,7 +15,8 @@ const type = computed(() => {
 })
 
 const speed = computed(() => {
-  return '网速: ' + downlink.value * 1024 / 8 + "KB/s"
+  // @ts-ignore
+  return '网速: ' + unref(downlink) * 1024 / 8 + "KB/s"
 })
 
 
