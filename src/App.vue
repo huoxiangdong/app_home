@@ -5,7 +5,7 @@ import { useNetwork, useStorage, useFetch } from "@vueuse/core";
 import { notification } from "ant-design-vue";
 
 const store = useStorage("app-store", { server: "" });
-const searchValue = ref("ssc");
+const searchValue = ref("");
 const loading = ref(false);
 
 const { isOnline, offlineAt, downlink, downlinkMax, effectiveType, saveData } = useNetwork()
@@ -48,7 +48,7 @@ const openNotificationWithIcon = (type: string) => {
 
 const onSearch = async (value: string) => {
   if (value === "") {
-    openNotificationWithIcon("warning");
+    //openNotificationWithIcon("warning");
     return;
   }
 
@@ -64,6 +64,11 @@ const onSearch = async (value: string) => {
   if (value === 'ssc') {
     // @ts-ignore
     url = 'http://10.1.14.254:8088'
+  }
+
+  if (value === '油品统计工具') {
+    // @ts-ignore
+    url = 'http://10.192.154.237:3033/#/store?app=%E5%BA%93%E5%AD%98%E7%AE%A1%E7%90%86%2F%E6%B2%B9%E5%93%81%E5%87%BA%E5%BA%93_%E6%89%8B%E6%8C%81'
   }
 
   if (value === 'dev') {
